@@ -51,7 +51,7 @@ class AdminController extends Controller
                 $destinationPath = 'images';
                 $extension = $file->extension();
                 $fileName = Str::random(10) . '.' . $extension;
-                $path = $file->move($destinationPath, $fileName);
+                $file->move($destinationPath, $fileName);
                 $path = $destinationPath . '/' . $fileName;
 
                 $this->user->photo = $path;

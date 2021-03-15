@@ -42,6 +42,12 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->get('student/profile', 'StudentController@profile');
 
             $router->post('student/edit', 'StudentController@edit');
+
+            $router->post('task/start', 'TaskController@start');
+
+            $router->get('task/active', 'TaskController@getActive');
+
+            $router->post('task/send/answer', 'TaskController@sendAnswer');
         });
 
         $router->group(['middleware' => 'auth:teacher'], function ($router) {
