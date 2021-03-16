@@ -34,17 +34,23 @@ class Task extends Model
         }
     }
 
-    public static function getActiveTaks($studentId)
+    public static function getActiveTask($studentId)
     {
-        $taskObj = DB::select('select id_task from solution_task where id_user = ?', [$studentId]);
-        foreach ($taskObj as $task) {
-            return $task->id_task;
-        }
+        return DB::select('select * from tasks where id = (select id_task from solution_task where id_user = ?)', [$studentId]);
     }
 
-    public static function sendPath($path, $studentId){
+    public static function sendFile($path, $studentId)
+    {
         DB::table('solution_task')->where('id_user', $studentId)->update(
             ['path_to_file' => $path]
         );
+    }
+
+    public static function getFilePath($studentId)
+    {
+        $taskObj = DB::select('select path_to_file from solution_task where id_user = ?', [$studentId]);
+        foreach ($taskObj as $task) {
+            return $task->path_to_file;
+        }
     }
 }

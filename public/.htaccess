@@ -10,6 +10,8 @@
     </IfModule>
 
     RewriteEngine On
+    RewriteCond %{REQUEST_METHOD} ^OPTION
+    RewriteRule .* - [F]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
@@ -25,5 +27,7 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^(.*)$ index.php?$1 [L,QSA]
 </IfModule>
+
+
 
 

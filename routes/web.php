@@ -20,11 +20,11 @@ $router->group(['middleware' => 'CORS'], function ($router) {
     });
 
     $router->group(['prefix' => 'api'], function () use ($router) {
-        
+
         $router->post('login', 'AuthController@login');
 
         $router->post('logout', 'AuthController@logout');
-        
+
         $router->group(['middleware' => 'auth:admin'], function ($router) {
 
             $router->post('register/student', 'AuthController@registerStudent');
@@ -45,8 +45,6 @@ $router->group(['middleware' => 'CORS'], function ($router) {
 
             $router->post('task/start', 'TaskController@start');
 
-            $router->get('task/active', 'TaskController@getActive');
-
             $router->post('task/send/answer', 'TaskController@sendAnswer');
         });
 
@@ -61,6 +59,8 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->post('task/edit/{id}', 'TaskController@edit');
 
             $router->post('info/add', 'InfoController@add');
+
+            $router->get('task/get/answer/{id}', 'TaskController@getAnswer');
         });
 
         $router->get('student/list', 'GroupController@studentList');
@@ -71,13 +71,11 @@ $router->group(['middleware' => 'CORS'], function ($router) {
 
         $router->get('task/all', 'TaskController@all');
 
+        $router->get('task/active/{id}', 'TaskController@getActive');
+
         $router->get('info/all', 'InfoController@all');
-
-
-
-
-
-
+        
+        
         $router->options('/{any:.*}', function () {
             return response(['status' => 'success']);
         });

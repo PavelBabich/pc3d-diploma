@@ -1,8 +1,4 @@
 RewriteEngine On
-<IfModule mod_headers.c>
-           Header set Access-Control-Allow-Origin "*"
-           Header set Access-Control-Allow-Headers "*"
-           Header set Access-Control-Allow-Methods "PUT, GET, POST, DELETE, OPTIONS"
-</IfModule>
+
 RewriteCond %{REQUEST_URI} !public/
 RewriteRule (.*) public/$1 [L]

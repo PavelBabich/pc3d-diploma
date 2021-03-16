@@ -3,3 +3,6 @@
 Homestead.json
 Homestead.yaml
 .env
+/public/docs
+/public/images
+/public/objects

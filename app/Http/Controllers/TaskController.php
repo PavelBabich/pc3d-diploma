@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Student;
 use App\Models\Task;
+use DirectoryIterator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 class TaskController extends Controller
 {
@@ -75,11 +75,9 @@ class TaskController extends Controller
         }
     }
 
-    public function getActive()
+    public function getActive($studentId)
     {
-        $user = Auth::guard('student')->user();
-
-        return Task::getActiveTaks($user->id);
+        return Task::getActiveTask($studentId);
     }
 
     public function sendAnswer(Request $request)
@@ -93,13 +91,34 @@ class TaskController extends Controller
 
             $file->move($destinationPath, $fileName);
         }
-        
-        try{
-            Task::sendPath($destinationPath, $user->id);
+
+        try {
+            Task::sendFile($destinationPath, $user->id);
 
             return response()->json(['message' => 'Answer send successfully']);
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             return response()->json(['message' => 'Error']);
         }
+    }
+
+    public function getAnswer($studentId)
+    {
+        $dir_path = base_path(). '/public/' . Task::getFilePath($studentId);
+        $dir = new DirectoryIterator($dir_path);
+        
+        $files = [];
+        foreach($dir as $file){
+            if(!$file->isDot()){
+                $files[] = $file->getFilename();
+            }
+        }
+
+        // $type = 'text/plain';
+        // $headers = ['Content-Type' => $type];
+        // $path = $dir_path . '/' . $files[0];
+
+        // $response = new BinaryFileResponse($path);
+
+        // return $response;
     }
 }
