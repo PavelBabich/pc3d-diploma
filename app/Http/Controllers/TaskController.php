@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use DirectoryIterator;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -62,13 +63,19 @@ class TaskController extends Controller
         $user = Auth::guard('student')->user();
 
         //вызов функции начала задания
-        //параметры: id студента, id задания
+        //параметры: id студента, id задания, путь к папке с файлами
         try {
-            $respnose = Task::startTask($user->id, $request->input('id'));
+            $user = Auth::guard('student')->user();
+            $destinationPath = 'docs' . '/' . $user->surname;
+            if (!is_dir($destinationPath)) {
+                mkdir($destinationPath);
+            }
+
+            $respnose = Task::startTask($user->id, $request->input('id'), $destinationPath);
             if (!$respnose) {
                 return response()->json(['message' => 'Task started successfully']);
             } else {
-                return response()->json(['message' => $respnose]);
+                return response()->json(['message' => $respnose], 424);
             }
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error']);
@@ -82,19 +89,16 @@ class TaskController extends Controller
 
     public function sendAnswer(Request $request)
     {
-        $user = Auth::guard('student')->user();
-        $destinationPath = 'docs' . '/' . $user->surname;
-
-        $allFiles = $request->allFiles();
-        foreach ($allFiles as $file) {
-            $fileName = $file->getClientOriginalName();
-
-            $file->move($destinationPath, $fileName);
-        }
-
         try {
-            Task::sendFile($destinationPath, $user->id);
+            $user = Auth::guard('student')->user();
+            $pathFiles = Task::getFilePath($user->id);
 
+            $allFiles = $request->allFiles();
+            foreach ($allFiles as $file) {
+                $fileName = $file->getClientOriginalName();
+
+                $file->move($pathFiles, $fileName);
+            }
             return response()->json(['message' => 'Answer send successfully']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error']);
@@ -103,22 +107,31 @@ class TaskController extends Controller
 
     public function getAnswer($studentId)
     {
-        $dir_path = base_path(). '/public/' . Task::getFilePath($studentId);
+        $pathFiles = Task::getFilePath($studentId);
+        $dir_path = base_path() . '/public/' . $pathFiles;
         $dir = new DirectoryIterator($dir_path);
-        
+
         $files = [];
-        foreach($dir as $file){
-            if(!$file->isDot()){
-                $files[] = $file->getFilename();
+        foreach ($dir as $file) {
+            if (!$file->isDot()) {
+                $files[] = ['name' => $file->getFilename(), 'path' => $pathFiles . '/' . $file->getFilename()];
             }
         }
 
-        // $type = 'text/plain';
-        // $headers = ['Content-Type' => $type];
-        // $path = $dir_path . '/' . $files[0];
+        return response($files);
+    }
 
-        // $response = new BinaryFileResponse($path);
+    public function acceptAnswer($studentId)
+    {
+        try {
+            $pathFiles = Task::getFilePath($studentId);
+            array_map('unlink', glob($pathFiles . '/*'));
 
-        // return $response;
+            Task::deleteAnswer($studentId);
+
+            return response()->json(['message' => 'Answer accept successfully']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error']);
+        }
     }
 }

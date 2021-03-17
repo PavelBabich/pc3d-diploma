@@ -11,7 +11,7 @@
 |
 */
 
-use Illuminate\Http\Response;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 $router->group(['middleware' => 'CORS'], function ($router) {
@@ -61,6 +61,8 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->post('info/add', 'InfoController@add');
 
             $router->get('task/get/answer/{id}', 'TaskController@getAnswer');
+
+            $router->get('task/accept/answer/{id}', 'TaskController@acceptAnswer');
         });
 
         $router->get('student/list', 'GroupController@studentList');
