@@ -46,6 +46,18 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->post('task/start', 'TaskController@start');
 
             $router->post('task/send/answer', 'TaskController@sendAnswer');
+
+            $router->get('object/cpu', 'ObjectController@cpu');
+
+            $router->get('object/mother', 'ObjectController@mother');
+
+            $router->get('object/case', 'ObjectController@case');
+            
+            $router->get('object/power-supply', 'ObjectController@powerSupply');
+           
+            $router->get('object/graphics', 'ObjectController@graphics');
+            
+            $router->get('object/ram', 'ObjectController@ram');
         });
 
         $router->group(['middleware' => 'auth:teacher'], function ($router) {
@@ -66,10 +78,6 @@ $router->group(['middleware' => 'CORS'], function ($router) {
         });
 
         $router->get('student/list', 'GroupController@studentList');
-
-        $router->get('object/mother', 'ObjectController@mother');
-
-        $router->get('object/body', 'ObjectController@body');
 
         $router->get('task/all', 'TaskController@all');
 

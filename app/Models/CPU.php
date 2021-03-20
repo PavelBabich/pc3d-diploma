@@ -7,12 +7,8 @@ use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 use Illuminate\Support\Facades\DB;
 
-class Info extends Model
+class CPU extends Model
 {
-    protected $table = 'ads';
+    protected $table = 'cpu';
     
-    public static function getAds($groupId)
-    {
-        return DB::select('select id, description, created_at from ads where id_group = ? order by id desc', [$groupId]);
-    }
 }

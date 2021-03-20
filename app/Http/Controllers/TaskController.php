@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Task;
+use App\Models\Teacher;
 use DirectoryIterator;
 use Exception;
 use Illuminate\Http\Request;
@@ -22,13 +23,14 @@ class TaskController extends Controller
 
     public function add(Request $request)
     {
-
-        $id_type = Task::getTypeId($request->input('type'));
+        $groupId = Teacher::getGroupId($request->input('group'));
+        $typeId = Task::getTypeId($request->input('type'));
 
         try {
             $task = new Task();
             $task->name = $request->input('name');
-            $task->id_task_type = $id_type;
+            $task->id_task_type = $typeId;
+            $task->id_group = $groupId;
 
             $task->save();
 
@@ -55,7 +57,12 @@ class TaskController extends Controller
 
     public function all()
     {
-        return Task::getTask();
+        $user = Auth::guard('student')->user();
+        if (!$user) {
+            $user = Auth::guard('teacher')->user();
+        }
+        $taskList = Task::getTaskList($user->id_group);
+        return $taskList;
     }
 
     public function start(Request $request)
