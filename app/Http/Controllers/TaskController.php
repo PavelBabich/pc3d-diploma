@@ -32,9 +32,9 @@ class TaskController extends Controller
 
             $task->save();
 
-            return response()->json(['task' => $task, 'message' => 'Created']);
+            return response()->json(['task' => $task, 'message' => 'Задание успешно добавлено']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Task add failed']);
+            return response()->json(['message' => 'Ошибка добавления задания']);
         }
     }
 
@@ -47,9 +47,9 @@ class TaskController extends Controller
 
             $task->save();
 
-            return response()->json(['task' => $task, 'message' => 'Created'], 201);
+            return response()->json(['task' => $task, 'message' => 'Задание успешно изменено'], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Edit add failed']);
+            return response()->json(['message' => 'Ошибка изменения задания']);
         }
     }
 
@@ -73,7 +73,7 @@ class TaskController extends Controller
 
             $respnose = Task::startTask($user->id, $request->input('id'), $destinationPath);
             if (!$respnose) {
-                return response()->json(['message' => 'Task started successfully']);
+                return response()->json(['message' => 'Задание принято к исполнению']);
             } else {
                 return response()->json(['message' => $respnose], 424);
             }
@@ -99,9 +99,9 @@ class TaskController extends Controller
 
                 $file->move($pathFiles, $fileName);
             }
-            return response()->json(['message' => 'Answer send successfully']);
+            return response()->json(['message' => 'Ответ успешно добавлен']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error']);
+            return response()->json(['message' => 'Ошибка добавления задания']);
         }
     }
 
@@ -129,7 +129,7 @@ class TaskController extends Controller
 
             Task::deleteAnswer($studentId);
 
-            return response()->json(['message' => 'Answer accept successfully']);
+            return response()->json(['message' => 'Задание зачтено']);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error']);
         }

@@ -35,11 +35,14 @@ class StudentController extends Controller
 
     public function edit(Request $request)
     {
-
-        $this->validate($request, [
-            'phone' => 'required|string',
-            'email' => 'required|email',
-        ]);
+        try {
+            $this->validate($request, [
+                'phone' => 'required|string',
+                'email' => 'required|email|unique:teachers|unique:admin',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Ошибка изменения данных. Проверьте введенные данные'], 409);
+        }
 
         try {
             $this->user->phone = $request->input('phone');
@@ -62,9 +65,9 @@ class StudentController extends Controller
 
             $this->user->save();
 
-            return response()->json(['user' => $this->user, 'message' => 'Created'], 201);
+            return response()->json(['user' => $this->user, 'message' => 'Данные успешно изменены'], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Data editing Failed'], 409);
+            return response()->json(['message' => 'Ошибка изменения данных'], 409);
         }
     }
 }

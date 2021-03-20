@@ -22,22 +22,24 @@ class AuthController extends Controller
 
     public function registerStudent(Request $request)
     {
-
-        $this->validate($request, [
-            'name' => 'required|string',
-            'surname' => 'required|string',
-            'patronymic' => 'required|string',
-            'group' => 'required|string',
-            'practice' => 'required|string',
-            'phone' => 'required|string',
-            'email' => 'required|email|unique:students|unique:teachers|unique:admin',
-            'password' => 'required|confirmed',
-        ]);
+        try {
+            $this->validate($request, [
+                'name' => 'required|string',
+                'surname' => 'required|string',
+                'patronymic' => 'required|string',
+                'group' => 'required|string',
+                'practice' => 'required|string',
+                'phone' => 'required|string',
+                'email' => 'required|email|unique:students|unique:teachers|unique:admin',
+                'password' => 'required|confirmed',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Ошибка создания пользователя. Проверьте введенные данные'], 409);
+        }
 
         $groupId = Student::getGroupId($request->input('group'));
 
         $practiceId = Student::getPracticeId($request->input('practice'));
-
 
         try {
             $student = new Student();
@@ -53,24 +55,28 @@ class AuthController extends Controller
 
             $student->save();
 
-            return response()->json(['user' => $student, 'message' => 'Created'], 201);
+            return response()->json(['user' => $student, 'message' => 'Пользователь успешно создан'], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'User Registration Failed'], 409);
+            return response()->json(['message' => 'Ошибка создания пользователя'], 409);
         }
     }
 
     public function registerTeacher(Request $request)
     {
-        $this->validate($request, [
-            'name' => 'required|string',
-            'surname' => 'required|string',
-            'patronymic' => 'required|string',
-            'group' => 'required|string',
-            'practice' => 'required|string',
-            'phone' => 'required|string',
-            'email' => 'required|email|unique:students|unique:teachers|unique:admin',
-            'password' => 'required|confirmed',
-        ]);
+        try {
+            $this->validate($request, [
+                'name' => 'required|string',
+                'surname' => 'required|string',
+                'patronymic' => 'required|string',
+                'group' => 'required|string',
+                'practice' => 'required|string',
+                'phone' => 'required|string',
+                'email' => 'required|email|unique:students|unique:teachers|unique:admin',
+                'password' => 'required|confirmed',
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Ошибка создания пользователя. Проверьте введенные данные'], 409);
+        }
 
         $groupId = Teacher::getGroupId($request->input('group'));
 
@@ -90,9 +96,9 @@ class AuthController extends Controller
 
             $teacher->save();
 
-            return response()->json(['teacher' => $teacher, 'message' => 'Created'], 201);
+            return response()->json(['teacher' => $teacher, 'message' => 'Пользователь успешно создан'], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'User Registration Failed'], 409);
+            return response()->json(['message' => 'Ошибка создания пользователя'], 409);
         }
     }
 
@@ -122,7 +128,7 @@ class AuthController extends Controller
                 $role = 'teacher';
 
                 if (!$token) {
-                    return response()->json(['message' => 'Unauthorized'], 401);
+                    return response()->json(['message' => 'Проверьте корректность введенных данных'], 401);
                 }
             }
         }

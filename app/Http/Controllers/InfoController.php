@@ -25,9 +25,9 @@ class InfoController extends Controller
 
             $info->save();
 
-            return response()->json(['task' => $info, 'message' => 'Created']);
+            return response()->json(['task' => $info, 'message' => 'Объявление успешно добавлено']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Ad add failed']);
+            return response()->json(['message' => 'Ошибка создания объявления']);
         }
     }
 

@@ -36,7 +36,7 @@ class Task extends Model
 
     public static function getActiveTask($studentId)
     {
-        return DB::select('select * from tasks where id = (select id_task from solution_task where id_user = ?)', [$studentId]);
+        return DB::select('select * from task_view where id = (select id_task from solution_task where id_user = ?)', [$studentId]);
     }
 
     public static function getFilePath($studentId)
