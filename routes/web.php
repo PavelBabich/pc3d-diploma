@@ -58,6 +58,8 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->get('object/graphics', 'ObjectController@graphics');
             
             $router->get('object/ram', 'ObjectController@ram');
+
+            $router->post('task/pc/check', 'TaskController@pcCheck');
         });
 
         $router->group(['middleware' => 'auth:teacher'], function ($router) {

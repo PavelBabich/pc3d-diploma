@@ -11,7 +11,6 @@ use App\Models\GraphicsCard;
 use App\Models\RAM;
 use App\Models\PowerSupply;
 use App\Models\Motherboard;
-use App\Models\Power_supply;
 
 class ObjectController extends Controller
 {

@@ -5,7 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\Teacher;
 use DirectoryIterator;
-use Exception;
+use App\Models\CPU;
+use App\Models\ComputerCase;
+use App\Models\RAM;
+use App\Models\Motherboard;
+use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -140,5 +144,37 @@ class TaskController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error']);
         }
+    }
+
+    public function pcCheck(Request $request)
+    {
+        try{
+        $user = Auth::guard('student')->user();
+        $mother = Motherboard::findOrFail($request->input('id_motherboard'));
+        $cpu = CPU::findOrFail($request->input('id_cpu'));
+        $ram = RAM::findOrFail($request->input('id_ram'));
+        $case = ComputerCase::findOrFail($request->input('id_case'));
+
+        if (
+            $mother->cpu_socket !== $cpu->socket || $mother->memory_type !== $ram->memory_type ||
+            $case->form_factor !== $mother->form_factor
+        ) {
+            return response()->json(['result' => 'false' ,'message' => 'Выбранные компоненты не совместимы. Попробуйте еще раз']);
+        }
+
+        Task::sendPc(
+            $mother->id,
+            $cpu->id,
+            $ram->id,
+            $case->id,
+            $request->input('id_power_supply'),
+            $request->input('id_graphics_card'),
+            $user->id
+        );
+
+        return response()->json(['result' => 'true' ,'message' => 'Выбранные компоненты совместимы']);       
+    }catch(\Exception $e){
+        return response()->json(['result' => 'false' ,'message' => 'Ошибка. Перезагрузите страницу и попробуйте снова']);
+    } 
     }
 }

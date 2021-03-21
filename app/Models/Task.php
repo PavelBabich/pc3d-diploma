@@ -47,7 +47,23 @@ class Task extends Model
         }
     }
 
-    public static function deleteAnswer($studentId){
+    public static function deleteAnswer($studentId)
+    {
         DB::table('solution_task')->where('id_student', $studentId)->delete();
+    }
+
+    public static function sendPc($motherId, $cpuId, $ramId, $caseId, $powerSupplyId, $graphicsId, $userId)
+    {
+        DB::table('correct_pc')->insert(
+            [
+                'id_case' => $caseId,
+                'id_cpu' => $cpuId,
+                'id_graphics' => $graphicsId,
+                'id_motherboard' => $motherId,
+                'id_power_supply' => $powerSupplyId,
+                'id_ram' => $ramId,
+                'id_student' => $userId
+            ]
+        );
     }
 }
