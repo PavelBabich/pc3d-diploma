@@ -7,8 +7,10 @@ use App\Models\Teacher;
 use DirectoryIterator;
 use App\Models\CPU;
 use App\Models\ComputerCase;
+use App\Models\GraphicsCard;
 use App\Models\RAM;
 use App\Models\Motherboard;
+use App\Models\PowerSupply;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -148,33 +150,91 @@ class TaskController extends Controller
 
     public function pcCheck(Request $request)
     {
-        try{
-        $user = Auth::guard('student')->user();
-        $mother = Motherboard::findOrFail($request->input('id_motherboard'));
-        $cpu = CPU::findOrFail($request->input('id_cpu'));
-        $ram = RAM::findOrFail($request->input('id_ram'));
-        $case = ComputerCase::findOrFail($request->input('id_case'));
+        try {
+            $user = Auth::guard('student')->user();
+            $mother = Motherboard::findOrFail($request->input('id_motherboard'));
+            $cpu = CPU::findOrFail($request->input('id_cpu'));
+            $ram = RAM::findOrFail($request->input('id_ram'));
+            $case = ComputerCase::findOrFail($request->input('id_case'));
 
-        if (
-            $mother->cpu_socket !== $cpu->socket || $mother->memory_type !== $ram->memory_type ||
-            $case->form_factor !== $mother->form_factor
-        ) {
-            return response()->json(['result' => 'false' ,'message' => 'Выбранные компоненты не совместимы. Попробуйте еще раз']);
+            if (
+                $mother->cpu_socket !== $cpu->socket || $mother->memory_type !== $ram->memory_type ||
+                $case->form_factor !== $mother->form_factor
+            ) {
+                return response()->json(['result' => 'false', 'message' => 'Выбранные компоненты не совместимы. Попробуйте еще раз']);
+            }
+
+            Task::sendPc(
+                $mother->id,
+                $cpu->id,
+                $ram->id,
+                $case->id,
+                $request->input('id_power_supply'),
+                $request->input('id_graphics_card'),
+                $user->id
+            );
+
+            return response()->json(['result' => 'true', 'message' => 'Выбранные компоненты совместимы']);
+        } catch (\Exception $e) {
+            return response()->json(['result' => 'false', 'message' => 'Ошибка. Перезагрузите страницу и попробуйте снова']);
         }
+    }
 
-        Task::sendPc(
-            $mother->id,
-            $cpu->id,
-            $ram->id,
-            $case->id,
-            $request->input('id_power_supply'),
-            $request->input('id_graphics_card'),
-            $user->id
-        );
+    // public function existAnswer($studentId){
+        
+    // }
 
-        return response()->json(['result' => 'true' ,'message' => 'Выбранные компоненты совместимы']);       
-    }catch(\Exception $e){
-        return response()->json(['result' => 'false' ,'message' => 'Ошибка. Перезагрузите страницу и попробуйте снова']);
-    } 
+    public function existPc($studentId)
+    {
+        return Task::getExistPc($studentId);
+    }
+
+    public function getCorrectPc($studentId)
+    {
+        try {
+            $pcObj = Task::getExistPc($studentId);
+
+            foreach ($pcObj as $pc) {
+                $mother = Motherboard::findOrFail($pc->id_motherboard);
+                $cpu = CPU::findOrFail($pc->id_cpu);
+                $ram = RAM::findOrFail($pc->id_ram);
+                $case = ComputerCase::findOrFail($pc->id_case);
+                $graphics = GraphicsCard::findOrFail($pc->id_graphics);
+                $power_supply = PowerSupply::findOrFail($pc->id_power_supply);
+            }
+
+            return response()->json([
+                'Материнская плата' => $mother,
+                'Процессор' => $cpu,
+                'Оперативная память' => $ram,
+                'Корпус' => $case,
+                'Видеокарта' => $graphics,
+                'Блок питания' => $power_supply
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['result' => 'false', 'message' => 'Ошибка. Перезагрузите страницу и попробуйте снова']);
+        }
+    }
+
+    public function acceptAnswerPc($studentId)
+    {
+        try {
+            Task::deleteAnswerPc($studentId);
+
+            return response()->json(['message' => 'Задание зачтено']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Error']);
+        }
+    }
+
+    public function getAccessTask(Request $request){
+        $studentId = $request->get('student_id');
+        $taskId = $request->get('task_id');
+        $result = Task::getAccessTask($studentId, $taskId);
+
+        if($result){
+            return response()->json(['result' => 'true', 'message' => 'Это задание вами уже выполнено']);
+        }
+        return response()->json(['result' => 'false']);
     }
 }

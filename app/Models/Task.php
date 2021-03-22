@@ -52,18 +52,54 @@ class Task extends Model
         DB::table('solution_task')->where('id_student', $studentId)->delete();
     }
 
-    public static function sendPc($motherId, $cpuId, $ramId, $caseId, $powerSupplyId, $graphicsId, $userId)
+    public static function getExistPc($studentId)
     {
-        DB::table('correct_pc')->insert(
-            [
-                'id_case' => $caseId,
-                'id_cpu' => $cpuId,
-                'id_graphics' => $graphicsId,
-                'id_motherboard' => $motherId,
-                'id_power_supply' => $powerSupplyId,
-                'id_ram' => $ramId,
-                'id_student' => $userId
-            ]
+        return DB::select('select * from correct_pc where id_student = ?', [$studentId]);
+    }
+
+    public static function sendPc($motherId, $cpuId, $ramId, $caseId, $powerSupplyId, $graphicsId, $studentId)
+    {
+        $pcObj = Task::getExistPc($studentId);
+        if (!$pcObj) {
+            DB::table('correct_pc')->insert(
+                [
+                    'id_case' => $caseId,
+                    'id_cpu' => $cpuId,
+                    'id_graphics' => $graphicsId,
+                    'id_motherboard' => $motherId,
+                    'id_power_supply' => $powerSupplyId,
+                    'id_ram' => $ramId,
+                    'id_student' => $studentId
+                ]
+            );
+        } else {
+            foreach ($pcObj as $pc) {
+                $idPc = $pc->id;
+            }
+            DB::table('correct_pc')->where('id', $idPc)->update(
+                [
+                    'id_case' => $caseId,
+                    'id_cpu' => $cpuId,
+                    'id_graphics' => $graphicsId,
+                    'id_motherboard' => $motherId,
+                    'id_power_supply' => $powerSupplyId,
+                    'id_ram' => $ramId,
+                    'id_student' => $studentId
+                ]
+            );
+        }
+    }
+
+    public static function deleteAnswerPc($studentId)
+    {
+        DB::table('correct_pc')->where('id_student', $studentId)->delete();
+    }
+
+    public static function getAccessTask($studentId, $taskId)
+    {
+        return DB::select(
+            'select * from access_task where id_student = :student and id_task = :task',
+            ['student' => $studentId, 'task' => $taskId]
         );
     }
 }
