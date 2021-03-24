@@ -63,4 +63,11 @@ class Teacher extends Model implements AuthenticatableContract, AuthorizableCont
             return $practice->practice_name;
         }
     }
+
+    public static function getTeacherId($groupId){
+        $teacherObj =  DB::select('select id from teachers where id_group = ?', [$groupId]);
+        foreach($teacherObj as $teacher){
+            return $teacher->id;
+        }
+    }
 }

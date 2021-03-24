@@ -21,12 +21,12 @@ class InfoController extends Controller
 
     public function add(Request $request)
     {
-        $groupId = Teacher::getGroupId($request->input('group'));
+        $user = Auth::guard('teacher')->user();
 
         try {
             $info = new Info();
             $info->description = $request->input('description');
-            $info->id_group = $groupId;
+            $info->id_group = $user->id_group;
 
             $info->save();
 
@@ -42,7 +42,16 @@ class InfoController extends Controller
         if (!$user) {
             $user = Auth::guard('teacher')->user();
         }
-        $infoList = Info::getAds($user->id_group);
+        $infoList = Info::getAdsList($user->id_group);
         return $infoList;
+    }
+
+    public function delete(Request $request){
+        try{
+            Info::deleteInfo($request->input('id'));
+            return response()->json(['message' => 'Объявление успешно удалено']);
+        }catch(\Exception $e){
+            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже']);
+        }
     }
 }

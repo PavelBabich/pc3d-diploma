@@ -26,7 +26,6 @@ class AuthController extends Controller
             $this->validate($request, [
                 'name' => 'required|string',
                 'surname' => 'required|string',
-                'patronymic' => 'required|string',
                 'group' => 'required|string',
                 'practice' => 'required|string',
                 'phone' => 'required|string',
@@ -40,6 +39,11 @@ class AuthController extends Controller
         $groupId = Student::getGroupId($request->input('group'));
 
         $practiceId = Student::getPracticeId($request->input('practice'));
+
+        if (!$groupId || !$practiceId) {
+            $groupId = Student::createGroup($request->input('group'));
+            $practiceId = Student::createPractice($request->input('practice'));
+        }
 
         try {
             $student = new Student();
@@ -67,7 +71,6 @@ class AuthController extends Controller
             $this->validate($request, [
                 'name' => 'required|string',
                 'surname' => 'required|string',
-                'patronymic' => 'required|string',
                 'group' => 'required|string',
                 'practice' => 'required|string',
                 'phone' => 'required|string',
@@ -81,6 +84,11 @@ class AuthController extends Controller
         $groupId = Teacher::getGroupId($request->input('group'));
 
         $practiceId = Teacher::getPracticeId($request->input('practice'));
+
+        if (!$groupId || !$practiceId) {
+            $groupId = Student::createGroup($request->input('group'));
+            $practiceId = Student::createPractice($request->input('practice'));
+        }
 
         try {
             $teacher = new Teacher();

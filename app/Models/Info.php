@@ -11,8 +11,12 @@ class Info extends Model
 {
     protected $table = 'ads';
     
-    public static function getAds($groupId)
+    public static function getAdsList($groupId)
     {
         return DB::select('select id, description, created_at from ads where id_group = ? order by id desc', [$groupId]);
+    }
+
+    public static function deleteInfo($infoId){
+        DB::table('ads')->where('id', $infoId)->delete();
     }
 }

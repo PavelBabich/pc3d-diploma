@@ -24,8 +24,7 @@ class Task extends Model
 
     public static function startTask($studentId, $taskId, $path)
     {
-        $taskObj = DB::select('select id_task from solution_task where id_student = ?', [$studentId]);
-        if (!$taskObj) {
+        if (! DB::select('select id_task from solution_task where id_student = ?', [$studentId])) {
             DB::table('solution_task')->insert(
                 ['id_task' => $taskId, 'id_student' => $studentId, 'path_to_file' => $path]
             );
@@ -101,5 +100,9 @@ class Task extends Model
             'select * from access_task where id_student = :student and id_task = :task',
             ['student' => $studentId, 'task' => $taskId]
         );
+    }
+
+    public static function deleteTask($taskId){
+        DB::table('tasks')->where('id', $taskId)->delete();
     }
 }

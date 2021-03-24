@@ -75,16 +75,23 @@ class TaskController extends Controller
     {
         $user = Auth::guard('student')->user();
 
-        //вызов функции начала задания
-        //параметры: id студента, id задания, путь к папке с файлами
-        try {
-            $user = Auth::guard('student')->user();
-            $destinationPath = 'docs' . '/' . $user->surname;
-            if (!is_dir($destinationPath)) {
-                mkdir($destinationPath);
-            }
+        $studentId = $user->id;
+        $taskId = $request->input('id');
 
-            $respnose = Task::startTask($user->id, $request->input('id'), $destinationPath);
+        if(Task::getAccessTask($studentId, $taskId)){
+            return response()->json(['result' => 'false', 'message' => 'Это задание вами уже выполнено']);
+        }
+
+        $destinationPath = 'docs' . '/' . $user->surname;
+        if (!is_dir($destinationPath)) {
+            mkdir($destinationPath);
+        }
+
+        try {
+            
+            //вызов функции начала задания
+            //параметры: id студента, id задания, путь к папке с файлами
+            $respnose = Task::startTask($studentId, $taskId, $destinationPath);
             if (!$respnose) {
                 return response()->json(['message' => 'Задание принято к исполнению']);
             } else {
@@ -227,14 +234,12 @@ class TaskController extends Controller
         }
     }
 
-    public function getAccessTask(Request $request){
-        $studentId = $request->get('student_id');
-        $taskId = $request->get('task_id');
-        $result = Task::getAccessTask($studentId, $taskId);
-
-        if($result){
-            return response()->json(['result' => 'true', 'message' => 'Это задание вами уже выполнено']);
+    public function delete(Request $request){
+        try{
+            Task::deleteTask($request->input('id'));
+            return response()->json(['message' => 'Задание успешно удалено']);
+        }catch(\Exception $e){
+            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже']);
         }
-        return response()->json(['result' => 'false']);
     }
 }

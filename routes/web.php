@@ -81,13 +81,15 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->post('task/accept/pc/{id}', 'TaskController@acceptAnswerPc');
 
             $router->get('task/get/pc/{id}', 'TaskController@getCorrectPc');
+
+            $router->post('task/delete', 'TaskController@delete');
+            
+            $router->post('info/delete', 'InfoController@delete');
         });
 
         $router->get('task/exist/pc/{id}', 'TaskController@existPc');
 
-        // $router->get('task/exist/answer/{id}', 'TaskController@existAnswer');
-
-        $router->get('task/access', 'TaskController@getAccessTask');
+        $router->get('contacts/list', 'ContactsController@contactsList');
 
         $router->get('student/list', 'GroupController@studentList');
 
