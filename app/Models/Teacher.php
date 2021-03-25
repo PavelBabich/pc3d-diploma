@@ -70,4 +70,8 @@ class Teacher extends Model implements AuthenticatableContract, AuthorizableCont
             return $teacher->id;
         }
     }
+
+    public static function deleteTeacher($teacherId){
+        DB::table('teachers')->where('id', $teacherId)->delete();
+    }
 }

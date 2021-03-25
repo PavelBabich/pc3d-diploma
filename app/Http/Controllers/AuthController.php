@@ -40,8 +40,11 @@ class AuthController extends Controller
 
         $practiceId = Student::getPracticeId($request->input('practice'));
 
-        if (!$groupId || !$practiceId) {
+        if (!$groupId) {
             $groupId = Student::createGroup($request->input('group'));
+        }
+
+        if (!$practiceId) {
             $practiceId = Student::createPractice($request->input('practice'));
         }
 

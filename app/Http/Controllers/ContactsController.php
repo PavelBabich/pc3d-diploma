@@ -22,15 +22,23 @@ class ContactsController extends Controller
     public function contactsList()
     {
         try {
-            $admin = Admin::all();
             $contacts = Contacts::all();
-            $user = Auth::guard('student')->user();
-            if ($user) {
-                $teacherId = Teacher::getTeacherId($user->id_group);
-                $teacher = Teacher::findOrFail($teacherId);
-                return response()->json([$admin, $contacts, $teacher]);
+            $user = Auth::guard('admin')->user();
+            if (!$user) {
+                $admin = Admin::all();
+                $user = Auth::guard('student')->user();
+
+                if ($user) {
+                    $teacherId = Teacher::getTeacherId($user->id_group);
+                    $teacher = Teacher::findOrFail($teacherId);
+                    return response()->json([$admin, $contacts, $teacher]);
+                }
+                return response()->json([$admin, $contacts]);
             }
-            return response()->json([$admin, $contacts]);
+
+            $teacher = Teacher::all();
+            
+            return response()->json([$teacher, $contacts]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Возникла непредвиденная ошибка. Повторите попытку немного позже']);
         }

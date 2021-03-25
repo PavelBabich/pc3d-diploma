@@ -11,6 +11,7 @@
 |
 */
 
+use App\Http\Controllers\GroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,6 +35,14 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->get('admin/profile', 'AdminController@profile');
 
             $router->post('admin/edit', 'AdminController@edit');
+
+            $router->get('group/list', 'ListController@groupList');
+
+            $router->post('student/delete', 'ListController@deleteStudent');
+            
+            $router->post('group/delete', 'ListController@deleteGroup');
+            
+            $router->post('teacher/delete', 'ListController@deleteTeacher');
         });
 
 
@@ -43,7 +52,7 @@ $router->group(['middleware' => 'CORS'], function ($router) {
 
             $router->post('student/edit', 'StudentController@edit');
 
-            $router->post('task/start', 'TaskController@start');
+            $router->post('task/start', 'TaskController@startTask');
 
             $router->post('task/send/answer', 'TaskController@sendAnswer');
 
@@ -68,11 +77,11 @@ $router->group(['middleware' => 'CORS'], function ($router) {
 
             $router->post('teacher/edit', 'TeacherController@edit');
 
-            $router->post('task/add', 'TaskController@add');
+            $router->post('task/add', 'TaskController@addTask');
 
-            $router->post('task/edit/{id}', 'TaskController@edit');
+            $router->post('task/edit/{id}', 'TaskController@editTask');
 
-            $router->post('info/add', 'InfoController@add');
+            $router->post('info/add', 'InfoController@addInfo');
 
             $router->get('task/get/answer/{id}', 'TaskController@getAnswer');
 
@@ -82,22 +91,20 @@ $router->group(['middleware' => 'CORS'], function ($router) {
 
             $router->get('task/get/pc/{id}', 'TaskController@getCorrectPc');
 
-            $router->post('task/delete', 'TaskController@delete');
+            $router->post('task/delete', 'TaskController@deleteTask');
             
-            $router->post('info/delete', 'InfoController@delete');
+            $router->post('info/delete', 'InfoController@deleteInfo');
         });
-
-        $router->get('task/exist/pc/{id}', 'TaskController@existPc');
 
         $router->get('contacts/list', 'ContactsController@contactsList');
 
-        $router->get('student/list', 'GroupController@studentList');
+        $router->get('student/list', 'ListController@studentList');
 
-        $router->get('task/all', 'TaskController@all');
+        $router->get('task/all', 'TaskController@taskList');
 
         $router->get('task/active/{id}', 'TaskController@getActive');
 
-        $router->get('info/all', 'InfoController@all');
+        $router->get('info/all', 'InfoController@infoList');
         
         
         $router->options('/{any:.*}', function () {

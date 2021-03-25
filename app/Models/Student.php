@@ -82,4 +82,16 @@ class Student extends Model implements AuthenticatableContract, AuthorizableCont
             ['practice_name' => $practiceName]
         );
     }
+
+    public static function getGroupList(){
+        return DB::select('select * from groups');
+    }
+
+    public static function deleteStudent($studentId){
+        DB::table('students')->where('id', $studentId)->delete();
+    }
+    
+    public static function deleteGroup($groupId){
+        DB::table('groups')->where('id', $groupId)->delete();
+    }
 }

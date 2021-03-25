@@ -19,7 +19,7 @@ class InfoController extends Controller
     {
     }
 
-    public function add(Request $request)
+    public function addInfo(Request $request)
     {
         $user = Auth::guard('teacher')->user();
 
@@ -36,7 +36,7 @@ class InfoController extends Controller
         }
     }
 
-    public function all()
+    public function infoList()
     {
         $user = Auth::guard('student')->user();
         if (!$user) {
@@ -46,7 +46,7 @@ class InfoController extends Controller
         return $infoList;
     }
 
-    public function delete(Request $request){
+    public function deleteInfo(Request $request){
         try{
             Info::deleteInfo($request->input('id'));
             return response()->json(['message' => 'Объявление успешно удалено']);

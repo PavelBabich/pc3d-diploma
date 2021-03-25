@@ -27,7 +27,7 @@ class TaskController extends Controller
     {
     }
 
-    public function add(Request $request)
+    public function addTask(Request $request)
     {
         $groupId = Teacher::getGroupId($request->input('group'));
         $typeId = Task::getTypeId($request->input('type'));
@@ -42,11 +42,11 @@ class TaskController extends Controller
 
             return response()->json(['task' => $task, 'message' => 'Задание успешно добавлено']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Ошибка добавления задания']);
+            return response()->json(['message' => 'Ошибка добавления задания'], 424);
         }
     }
 
-    public function edit(Request $request, $id)
+    public function editTask(Request $request, $id)
     {
         try {
             $task = Task::findOrFail($id);
@@ -57,11 +57,11 @@ class TaskController extends Controller
 
             return response()->json(['task' => $task, 'message' => 'Задание успешно изменено'], 201);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Ошибка изменения задания']);
+            return response()->json(['message' => 'Ошибка изменения задания'], 424);
         }
     }
 
-    public function all()
+    public function taskList()
     {
         $user = Auth::guard('student')->user();
         if (!$user) {
@@ -71,7 +71,7 @@ class TaskController extends Controller
         return $taskList;
     }
 
-    public function start(Request $request)
+    public function startTask(Request $request)
     {
         $user = Auth::guard('student')->user();
 
@@ -79,7 +79,7 @@ class TaskController extends Controller
         $taskId = $request->input('id');
 
         if(Task::getAccessTask($studentId, $taskId)){
-            return response()->json(['result' => 'false', 'message' => 'Это задание вами уже выполнено']);
+            return response()->json(['result' => 'false', 'message' => 'Это задание вами уже выполнено'], 424);
         }
 
         $destinationPath = 'docs' . '/' . $user->surname;
@@ -90,7 +90,6 @@ class TaskController extends Controller
         try {
             
             //вызов функции начала задания
-            //параметры: id студента, id задания, путь к папке с файлами
             $respnose = Task::startTask($studentId, $taskId, $destinationPath);
             if (!$respnose) {
                 return response()->json(['message' => 'Задание принято к исполнению']);
@@ -121,7 +120,7 @@ class TaskController extends Controller
             }
             return response()->json(['message' => 'Ответ успешно добавлен']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Ошибка добавления задания']);
+            return response()->json(['message' => 'Ошибка добавления задания'], 424);
         }
     }
 
@@ -168,7 +167,7 @@ class TaskController extends Controller
                 $mother->cpu_socket !== $cpu->socket || $mother->memory_type !== $ram->memory_type ||
                 $case->form_factor !== $mother->form_factor
             ) {
-                return response()->json(['result' => 'false', 'message' => 'Выбранные компоненты не совместимы. Попробуйте еще раз']);
+                return response()->json(['result' => 'false', 'message' => 'Выбранные компоненты не совместимы. Попробуйте еще раз'], 424);
             }
 
             Task::sendPc(
@@ -183,13 +182,9 @@ class TaskController extends Controller
 
             return response()->json(['result' => 'true', 'message' => 'Выбранные компоненты совместимы']);
         } catch (\Exception $e) {
-            return response()->json(['result' => 'false', 'message' => 'Ошибка. Перезагрузите страницу и попробуйте снова']);
+            return response()->json(['result' => 'false', 'message' => 'Ошибка. Перезагрузите страницу и попробуйте снова'], 424);
         }
     }
-
-    // public function existAnswer($studentId){
-        
-    // }
 
     public function existPc($studentId)
     {
@@ -219,7 +214,7 @@ class TaskController extends Controller
                 'Блок питания' => $power_supply
             ]);
         } catch (\Exception $e) {
-            return response()->json(['result' => 'false', 'message' => 'Ошибка. Перезагрузите страницу и попробуйте снова']);
+            return response()->json(['result' => 'false', 'message' => 'Ошибка. Перезагрузите страницу и попробуйте снова'], 424);
         }
     }
 
@@ -234,12 +229,12 @@ class TaskController extends Controller
         }
     }
 
-    public function delete(Request $request){
+    public function deleteTask(Request $request){
         try{
             Task::deleteTask($request->input('id'));
             return response()->json(['message' => 'Задание успешно удалено']);
         }catch(\Exception $e){
-            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже']);
+            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже'], 424);
         }
     }
 }
