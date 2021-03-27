@@ -49,7 +49,7 @@ class ListController extends Controller
             Student::deleteGroup($request->input('id'));
             return response()->json(['message' => 'Группа успешно удалена']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже']);
+            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже'], 424);
         }
     }
 
@@ -59,7 +59,7 @@ class ListController extends Controller
             Student::deleteStudent($request->input('id'));
             return response()->json(['message' => 'Студент успешно удален']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже']);
+            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже'], 424);
         }
     }
 
@@ -69,7 +69,7 @@ class ListController extends Controller
             Teacher::deleteTeacher($request->input('id'));
             return response()->json(['message' => 'Преподаватель успешно удален']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже']);
+            return response()->json(['message' => 'Произошла непредвиденная ошибка. Повторите попытку немного позже'], 424);
         }
     }
 }
