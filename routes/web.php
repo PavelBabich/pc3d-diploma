@@ -15,7 +15,7 @@ use App\Http\Controllers\GroupController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-$router->group(['middleware' => 'CORS'], function ($router) {
+$router->group(['middleware' => 'CORS'], function () use($router){
     $router->get('/', function () use ($router) {
         return $router->app->version();
     });
@@ -26,7 +26,7 @@ $router->group(['middleware' => 'CORS'], function ($router) {
 
         $router->post('logout', 'AuthController@logout');
 
-        $router->group(['middleware' => 'auth:admin'], function ($router) {
+        $router->group(['middleware' => 'auth:admin'], function () use($router){
 
             $router->post('register/student', 'AuthController@registerStudent');
 
@@ -39,14 +39,14 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->get('group/list', 'ListController@groupList');
 
             $router->post('student/delete', 'ListController@deleteStudent');
-            
+
             $router->post('group/delete', 'ListController@deleteGroup');
-            
+
             $router->post('teacher/delete', 'ListController@deleteTeacher');
         });
 
 
-        $router->group(['middleware' => 'auth:student'], function ($router) {
+        $router->group(['middleware' => 'auth:student'], function () use($router){
 
             $router->get('student/profile', 'StudentController@profile');
 
@@ -61,17 +61,17 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->get('object/mother', 'ObjectController@mother');
 
             $router->get('object/case', 'ObjectController@case');
-            
+
             $router->get('object/power-supply', 'ObjectController@powerSupply');
-           
+
             $router->get('object/graphics', 'ObjectController@graphics');
-            
+
             $router->get('object/ram', 'ObjectController@ram');
 
             $router->post('task/pc/check', 'TaskController@pcCheck');
         });
 
-        $router->group(['middleware' => 'auth:teacher'], function ($router) {
+        $router->group(['middleware' => 'auth:teacher'], function () use($router){
 
             $router->get('teacher/profile', 'TeacherController@profile');
 
@@ -92,7 +92,7 @@ $router->group(['middleware' => 'CORS'], function ($router) {
             $router->get('task/get/pc/{id}', 'TaskController@getCorrectPc');
 
             $router->post('task/delete', 'TaskController@deleteTask');
-            
+
             $router->post('info/delete', 'InfoController@deleteInfo');
         });
 
@@ -105,8 +105,8 @@ $router->group(['middleware' => 'CORS'], function ($router) {
         $router->get('task/active/{id}', 'TaskController@getActive');
 
         $router->get('info/all', 'InfoController@infoList');
-        
-        
+
+
         $router->options('/{any:.*}', function () {
             return response(['status' => 'success']);
         });
